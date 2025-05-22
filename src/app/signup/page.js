@@ -1,11 +1,22 @@
+'use client'
 import {CupSoda, GalleryVerticalEnd} from "lucide-react";
 import {SignupForm} from "@/components/signup-form";
+import {useClerk} from "@clerk/nextjs";
+import {useEffect} from "react";
 
 export default function Home() {
+    const clerk = useClerk();
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(e.target.value);
     }
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            await clerk.redirectWithAuth('/chat/general');
+        }
+        checkAuth();
+    }, [clerk]);
 
     return (
 

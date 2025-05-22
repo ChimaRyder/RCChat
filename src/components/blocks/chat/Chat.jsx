@@ -1,35 +1,39 @@
-import {useReducer} from "react";
+import {useReducer, useState} from "react";
 import {useChannel} from "ably/react";
 import MessageList from "@/components/blocks/chat/MessageList";
 import ChatInput from "@/components/blocks/chat/ChatInput";
-
-const ADD = 'ADD'
-
-const reducer = (prev, event) => {
-    switch (event.name) {
-        // appends message to messages
-        case ADD:
-            return [...prev, event]
-    }
-}
+import {useMessages, useRoom} from "@ably/chat/react";
+import {MessageEvents} from "@ably/chat";
+import {useUser} from "@clerk/nextjs";
 
 const Chat = ( {channelName}) => {
-
+    const {} = useRoom();
+    const [messages, setMessages] = useState([]);
     // placeholder user
-    const user = {
-        imageUrl: 'https://ui-avatars.com/api/?name=alex',
-    }
+    const {user} = useUser();
 
-    const [messages, dispatch] = useReducer(reducer, [])
     // usechannel accepts channel name and a function to invoke when new messages are received. pass dispatch.
-    const {channel, publish} = useChannel(channelName, dispatch);
+    const {send} = useMessages({
+        listener: (e) => {
+            const message = e.message;
+            switch (e.type) {
+                case MessageEvents.Created: {
+                    setMessages((prev) => [...prev, message]);
+                    break;
+                }
+                default: {
+                    console.log(e);
+                }
+            }
+        }
+    })
 
-    const publishMessage = (message) => {
+    const publishMessage = async (message) => {
         // publish message to ably
-        publish({
-            name: ADD,
-            data: {
-                message,
+        await send({
+            text: message,
+            metadata: {
+                username: user.username,
                 avatarUrl: user.imageUrl,
             }
         })

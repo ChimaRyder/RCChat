@@ -1,14 +1,40 @@
+'use client'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {useSignIn} from "@clerk/nextjs";
+import {useRouter} from "next/navigation";
+import {error} from "next/dist/build/output/log";
+import {toast} from "sonner";
 
-export function LoginForm({
-  className,
-  ...props
-}) {
+export function LoginForm({className, ...props}) {
+  const {signIn, setActive} = useSignIn();
+  const router = useRouter();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const {email, password} = e.target;
+    const formData = {
+      identifier: email.value,
+      password: password.value,
+    }
+
+    try {
+      const result = await signIn.create(formData);
+
+      if (result.status === 'complete') {
+        await setActive({session: result.createdSessionId});
+        router.push('/chat/general')
+      }
+    } catch (e) {
+        console.log(error);
+        toast.error(e.message);
+    }
+  }
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form onSubmit={handleSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Sign In</h1>
         <p className="text-muted-foreground text-sm text-balance">

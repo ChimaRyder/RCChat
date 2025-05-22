@@ -6,29 +6,34 @@ import {Realtime} from "ably";
 import {AblyProvider, ChannelProvider} from "ably/react";
 import Chat from "@/components/blocks/chat/Chat";
 import {use} from "react";
+import {ChatClient} from "@ably/chat";
+import {ChatClientProvider, ChatRoomProvider} from "@ably/chat/react";
+import chat from "@/components/blocks/chat/Chat";
 
 const Page = ({params}) => {
     // Ably Client
     const client = new Realtime({
-        key: process.env.ABLY_SECRET_KEY,
-        clientId: 'Alex',
-
+        authUrl: '/api/ably',
+        autoConnect: typeof window !== 'undefined',
     })
-    const channelName = `chat:${use(params).channel}`
+    const chatClient = new ChatClient(client);
+
+    chatClient.connection.onStatusChange((change) => console.log(`Connection is currently ${change.current}`));
+    const channelName = `${use(params).channel}`;
 
     return (
-        <AblyProvider client={client}>
+        <ChatClientProvider client={chatClient}>
             <div className={""}>
                 <SidebarProvider>
                     <ChatSideBar/>
-                    <ChannelProvider channelName={channelName}>
-                        <main className={"w-screen p-5 flex flex-col"}>
+                    <ChatRoomProvider id={channelName}>
+                        <main className={"w-screen p-5 flex flex-col px-100"}>
                             <Chat channelName={channelName}/>
                         </main>
-                    </ChannelProvider>
+                    </ChatRoomProvider>
                 </SidebarProvider>
             </div>
-        </AblyProvider>
+        </ChatClientProvider>
 
     )
 }

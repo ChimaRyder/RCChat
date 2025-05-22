@@ -1,7 +1,18 @@
+'use client'
 import {CupSoda, GalleryVerticalEnd} from "lucide-react";
 import {LoginForm} from "@/components/login-form";
+import {useClerk} from "@clerk/nextjs";
+import {useEffect} from "react";
 
 export default function Home() {
+    const clerk = useClerk();
+
+    useEffect( () => {
+        const checkAuth = async () => {
+            await clerk.redirectWithAuth('/chat/general');
+        }
+        checkAuth();
+    }, [clerk]);
   return (
 
       <div className="grid min-h-svh lg:grid-cols-2">
