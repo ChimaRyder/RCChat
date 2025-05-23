@@ -6,17 +6,6 @@ import {useEffect} from "react";
 
 export default function Home() {
     const clerk = useClerk();
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log(e.target.value);
-    }
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            await clerk.redirectWithAuth('/chat/general');
-        }
-        checkAuth();
-    }, [clerk]);
 
     return (
 

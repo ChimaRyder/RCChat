@@ -6,12 +6,13 @@ import {useSignUp} from "@clerk/nextjs";
 import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "@/components/ui/input-otp";
 import {toast} from "sonner";
 import {useState} from "react";
-import {redirect} from "next/navigation";
 import {cn} from "@/lib/utils";
+import {useRouter} from "next/navigation";
 
 export function SignupForm({className, ...props}) {
     const {signUp, setActive} = useSignUp();
     const [pendingVerification, setPendingVerification] = useState(false);
+    const router = useRouter();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -45,7 +46,7 @@ export function SignupForm({className, ...props}) {
             if (result.status === 'complete') {
                 toast.success("Email address verified. Welcome to RC Chat!.");
                 await setActive({session : result.createdSessionId });
-                redirect('/chat/general')
+                router.push('/chat/general');
             }
         } catch (error) {
             console.log(error);

@@ -5,7 +5,7 @@ import ChatSideBar from "@/components/blocks/chat/ChatSideBar";
 import {Realtime} from "ably";
 import {AblyProvider, ChannelProvider} from "ably/react";
 import Chat from "@/components/blocks/chat/Chat";
-import {use} from "react";
+import {use, useEffect} from "react";
 import {ChatClient} from "@ably/chat";
 import {ChatClientProvider, ChatRoomProvider} from "@ably/chat/react";
 import chat from "@/components/blocks/chat/Chat";
@@ -21,18 +21,26 @@ const Page = ({params}) => {
     chatClient.connection.onStatusChange((change) => console.log(`Connection is currently ${change.current}`));
     const channelName = `${use(params).channel}`;
 
+    useEffect(() => {
+        const setOnline = async () => {
+            const room = await chatClient.rooms.get("online-users")
+            await room.presence.enter();
+        }
+        setOnline();
+    }, [])
+
     return (
         <ChatClientProvider client={chatClient}>
-            <div className={""}>
-                <SidebarProvider>
-                    <ChatSideBar/>
-                    <ChatRoomProvider id={channelName}>
-                        <main className={"w-screen p-5 flex flex-col px-100"}>
-                            <Chat channelName={channelName}/>
-                        </main>
-                    </ChatRoomProvider>
-                </SidebarProvider>
-            </div>
+            <ChatRoomProvider id={channelName}>
+                <div className={""}>
+                    <SidebarProvider>
+                        <ChatSideBar client={chatClient}/>
+                            <main className={"w-screen p-5 flex flex-col px-100"}>
+                                <Chat channelName={channelName}/>
+                            </main>
+                    </SidebarProvider>
+                </div>
+            </ChatRoomProvider>
         </ChatClientProvider>
 
     )
