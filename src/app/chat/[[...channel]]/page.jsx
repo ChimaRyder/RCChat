@@ -42,8 +42,10 @@ const Page = ({params}) => {
                 <div className={""}>
                     <SidebarProvider>
                         <ChatSideBar client={chatClient} rtClient = {client}/>
-                            <main className={"w-screen p-5 flex flex-col px-100"}>
-                                <Chat channelName={channelName}/>
+                            <main className={"flex flex-1 justify-center"}>
+                                <div className={"flex flex-col flex-1 max-w-3xl"}>
+                                    <Chat channelName={channelName}/>
+                                </div>
                             </main>
                     </SidebarProvider>
                 </div>
