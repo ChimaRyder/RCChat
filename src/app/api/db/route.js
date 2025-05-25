@@ -1,21 +1,26 @@
 import clientPromise from "@/lib/mongodb";
 import {currentUser} from "@clerk/nextjs/server";
-import {usePresence} from "ably/react";
 
 export const GET = async () => {
    const user = await currentUser();
    const client = await clientPromise;
    const db = client.db("rcchat");
 
-   const rooms = await db.collection("chat").find({user1: user.id}).toArray();
-   console.log(rooms);
+   const rooms = await db.collection("chat").find({users: user.id}).toArray();
 
    return Response.json(rooms);
 }
 
 export const POST = async (req) => {
-   console.log(req.first_user);
-   console.log(req.second_user);
+   const body = await req.json();
 
-   return Response.json({received: true});
+   const client = await clientPromise;
+   const db = client.db("rcchat");
+
+   const result = await db.collection("chat").insertOne({
+       users: [body.first_user, body.second_user],
+       createdAt: new Date()
+   });
+
+   return Response.json(result);
 }

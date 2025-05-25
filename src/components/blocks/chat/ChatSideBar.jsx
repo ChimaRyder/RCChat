@@ -19,8 +19,9 @@ import {ChevronDownIcon, ChevronsUpDownIcon, LogOutIcon, PlusIcon} from "lucide-
 import {useRouter} from "next/navigation";
 import {usePresence, useRoom} from "@ably/chat/react";
 import {toast} from "sonner";
+import RandomizerButton from "@/components/blocks/chat/RandomizerButton";
 
-export default function ChatSideBar({client, ...props}) {
+export default function ChatSideBar({client, rtClient, ...props}) {
     const {user} = useUser();
     const {signOut} = useClerk();
     const router = useRouter();
@@ -44,7 +45,7 @@ export default function ChatSideBar({client, ...props}) {
         })
             .then(res => res.json())
             .then(rooms => {
-                console.log(rooms)
+                console.log(rooms.map(room => room._id));
             })
             .catch(err => {
                 console.log(err)
@@ -53,44 +54,12 @@ export default function ChatSideBar({client, ...props}) {
 
     }
 
-    const getUsers = async () => {
-        const room = await client.rooms.get("online-users");
-        const presence = await room.presence.get();
-
-        if (presence.length <= 1) {
-            toast.error("Chat is unavailable at the moment. Please try again later.");
-            return;
-        }
-
-        let second_user;
-        do {
-            second_user = presence[Math.floor(Math.random() * presence.length)].clientId;
-        } while (second_user === user.id);
-
-        const result = await fetch('/api/db', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                first_user: user.id,
-                second_user: second_user
-            })
-        })
-
-        const data = await result.json();
-        console.log(data)
-    }
-
     return (
         <Sidebar collapsible={"offcanvas"}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size={"lg"} className={"font-semibold text-lg flex text-center"} onClick={() => getUsers()}>
-                            <PlusIcon className={"size-4"}/>
-                            New Chat
-                        </SidebarMenuButton>
+                        <RandomizerButton client={client} user={user} rtClient={rtClient}/>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
