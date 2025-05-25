@@ -2,9 +2,9 @@ import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
-    SidebarGroup, SidebarHeader,
+    SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader,
     SidebarMenu, SidebarMenuButton,
-    SidebarMenuItem
+    SidebarMenuItem, SidebarMenuSkeleton, SidebarSeparator
 } from "@/components/ui/sidebar";
 import {
     DropdownMenu,
@@ -17,15 +17,14 @@ import {Avatar, AvatarImage} from "@/components/ui/avatar";
 import {useClerk, useUser} from "@clerk/nextjs";
 import {ChevronDownIcon, ChevronsUpDownIcon, LogOutIcon, PlusIcon} from "lucide-react";
 import {useRouter} from "next/navigation";
-import {usePresence, useRoom} from "@ably/chat/react";
-import {toast} from "sonner";
 import RandomizerButton from "@/components/blocks/chat/RandomizerButton";
+import {useEffect, useState} from "react";
 
 export default function ChatSideBar({client, rtClient, ...props}) {
     const {user} = useUser();
     const {signOut} = useClerk();
     const router = useRouter();
-
+    const [chats, setChats] = useState([])
 
     const handleSignOut = () => {
         console.log("signing out...")
@@ -45,14 +44,26 @@ export default function ChatSideBar({client, rtClient, ...props}) {
         })
             .then(res => res.json())
             .then(rooms => {
-                console.log(rooms.map(room => room._id));
+                const dbChats = rooms.map(room => {
+                    const user = room.users.filter(user => user !== user.id)[0]
+                    // const userData =
+
+                    return {
+                        id: room._id,
+                        // user: ,
+                    }
+                })
+                console.log(dbChats)
+                setChats(dbChats)
             })
             .catch(err => {
                 console.log(err)
             })
-
-
     }
+
+    useEffect(() => {
+        getRooms();
+    }, [user]);
 
     return (
         <Sidebar collapsible={"offcanvas"}>
@@ -63,9 +74,28 @@ export default function ChatSideBar({client, rtClient, ...props}) {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
+            <SidebarSeparator/>
             <SidebarContent>
                 <SidebarGroup>
-                    dffa
+                    <SidebarGroupLabel>Chats</SidebarGroupLabel>
+                    <SidebarMenu>
+                        {chats.map(chat => (
+                            <SidebarMenuItem key={chat.id}>
+                                <SidebarMenuButton size={"lg"} className={""} onClick={() => router.push(`/chat/${chat.id}`)}>
+                                    <Avatar>
+                                        <AvatarImage src={user?.imageUrl}/>
+                                    </Avatar>
+                                    <div className={"flex flex-col flex-1"}>
+                                        <div className={"flex flex-row justify-between items-start"}>
+                                            <p className={"font-semibold"}>General</p>
+                                            <p className={"font-light text-xs"}>1:23 PM</p>
+                                        </div>
+                                        <p className={"text-muted-foreground text-xs"}>Seriously?</p>
+                                    </div>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
