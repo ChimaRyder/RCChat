@@ -7,7 +7,7 @@ const RandomizerButton = ({client, user, rtClient}) => {
     const router = useRouter();
 
     const getUsers = async () => {
-        const room = await client.rooms.get("online-users");
+        const room = await client.rooms.get("chat:online-users");
         const presence = await room.presence.get();
 
         if (presence.length <= 1) {
@@ -32,11 +32,6 @@ const RandomizerButton = ({client, user, rtClient}) => {
         })
 
         const data = await response.json();
-
-        rtClient.channels.get(second_user).publish("new-chat", {
-            username: user.username,
-        })
-
         router.push("/chat/" + data.insertedId);
     }
 

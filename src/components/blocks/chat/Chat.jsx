@@ -1,13 +1,16 @@
-import {useReducer, useState} from "react";
+import {useEffect, useReducer, useState} from "react";
 import {useChannel} from "ably/react";
 import MessageList from "@/components/blocks/chat/MessageList";
 import ChatInput from "@/components/blocks/chat/ChatInput";
 import {useMessages, useRoom} from "@ably/chat/react";
 import {MessageEvents} from "@ably/chat";
 import {useUser} from "@clerk/nextjs";
+import {toast} from "sonner";
+import {useRouter} from "next/navigation";
 
 const Chat = ( {channelName}) => {
-    const {} = useRoom();
+    const {roomStatus, roomError} = useRoom();
+    const router = useRouter();
     const [messages, setMessages] = useState([]);
     // placeholder user
     const {user} = useUser();
@@ -38,6 +41,13 @@ const Chat = ( {channelName}) => {
             }
         })
     }
+
+    useEffect(() => {
+        if (roomStatus === "failed") {
+            toast.error("Failed to join chat room. Please try again later.");
+            router.push('/chat/new');
+        }
+    }, [roomStatus, roomError])
 
     return (
         <>

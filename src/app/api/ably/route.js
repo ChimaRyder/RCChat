@@ -19,19 +19,33 @@ const createToken = (clientID, apiKey, claim, capability) => {
 }
 
 const generateCapability = async (claim) => {
+    if (claim.isMod) {
+        return {'*' : ['*']};
+    }
+
     const client = await clientPromise;
     const db = client.db("rcchat");
 
-    const rooms = await db.collection("chat").find({users: claim.id}).toArray();
-    const roomIds = rooms.map(room => room._id);
+    const user = await currentUser()
+    const rooms = await db.collection("chat").find({users: user.id}).toArray();
+    const roomIds = rooms.map(room => room._id.toString());
 
-    return {'*' : ['*']}
+    const capability = {};
+    capability[`chat:online-users::$chat`] = ['subscribe', 'presence', 'history']; // FOR RANDOMIZATION
+    capability[`chat:${user.id}`] = ['subscribe', 'history']; // FOR NOTIFICATIONS
+    capability[`chat:new::$chat`] = ['subscribe','history'];
+
+    roomIds.forEach(roomId => {
+        capability[`chat:${roomId}::$chat`] = ['publish', 'subscribe', 'presence', 'history']; // FOR CHATROOMS
+    })
+
+    return capability;
 }
 
 export const GET = async () => {
     const user = await currentUser();
     const userClaim = user.publicMetadata;
-    const userCapability = generateCapability(userClaim);
+    const userCapability = await generateCapability(userClaim);
 
     const token = await createToken(user.id, process.env.ABLY_SECRET_KEY, userClaim, userCapability);
 

@@ -6,7 +6,7 @@ import {Realtime} from "ably";
 import Chat from "@/components/blocks/chat/Chat";
 import {use, useEffect} from "react";
 import {ChatClient} from "@ably/chat";
-import {ChatClientProvider, ChatRoomProvider} from "@ably/chat/react";
+import {ChatClientProvider, ChatRoomProvider, useRoom} from "@ably/chat/react";
 import {useUser} from "@clerk/nextjs";
 import {toast} from "sonner";
 
@@ -20,21 +20,24 @@ const Page = ({params}) => {
     const chatClient = new ChatClient(client);
 
     chatClient.connection.onStatusChange((change) => console.log(`Connection is currently ${change.current}`));
-    const channelName = `${use(params).channel}`;
+    const channelName = `chat:${use(params).channel}`;
 
     useEffect(() => {
         const setOnline = async () => {
-            const room = await chatClient.rooms.get("online-users")
+            const room = await chatClient.rooms.get("chat:online-users")
             await room.presence.enter();
 
-            const notif = await client.channels.get(user?.id);
-            console.log(notif);
-            await notif.subscribe((message) => {
-                toast.info(`${message.data.username} wants to chat with you.`);
-            })
+            if (user) {
+                const notif = client.channels.get(`chat:${user?.id}`);
+                const res = await notif.subscribe((message) => {
+                    toast.info(`${message.data.username} wants to chat with you.`);
+                })
+            }
         }
         setOnline();
     }, [user])
+
+
 
     return (
         <ChatClientProvider client={chatClient}>

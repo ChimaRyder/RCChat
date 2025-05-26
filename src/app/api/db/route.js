@@ -22,5 +22,14 @@ export const POST = async (req) => {
        createdAt: new Date()
    });
 
+   const Ably = require('ably');
+   const ably = new Ably.Rest({key: process.env.ABLY_SECRET_KEY});
+   const user = await currentUser();
+
+   const notif = await ably.channels.get(`chat:${body.second_user}`);
+   await notif.publish("new-chat", {
+      username: user.username,
+   })
+
    return Response.json(result);
 }

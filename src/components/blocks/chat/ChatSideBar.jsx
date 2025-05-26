@@ -35,30 +35,24 @@ export default function ChatSideBar({client, rtClient, ...props}) {
 
     }
 
-    const getRooms = () => {
-        fetch('/api/db', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(res => res.json())
-            .then(rooms => {
-                const dbChats = rooms.map(room => {
-                    const user = room.users.filter(user => user !== user.id)[0]
-                    // const userData =
+    const getRooms = async () => {
+        const res = await fetch('/api/db', {})
+        const rooms = await res.json()
 
-                    return {
-                        id: room._id,
-                        // user: ,
-                    }
-                })
-                console.log(dbChats)
-                setChats(dbChats)
+        const dbChats = await Promise.all(
+            rooms.map(async room => {
+                const second_user = room.users.find(u => u !== user?.id);
+                const res = await fetch(`/api/clerk?user=${second_user}`);
+                const userData = await res.json();
+
+                return {
+                    id: room._id,
+                    user: userData,
+                }
             })
-            .catch(err => {
-                console.log(err)
-            })
+        )
+
+        setChats(dbChats)
     }
 
     useEffect(() => {
@@ -81,16 +75,14 @@ export default function ChatSideBar({client, rtClient, ...props}) {
                     <SidebarMenu>
                         {chats.map(chat => (
                             <SidebarMenuItem key={chat.id}>
-                                <SidebarMenuButton size={"lg"} className={""} onClick={() => router.push(`/chat/${chat.id}`)}>
+                                <SidebarMenuButton size={"lg"} className={"cursor-pointer"} onClick={() => router.push(`/chat/${chat.id}`)}>
                                     <Avatar>
-                                        <AvatarImage src={user?.imageUrl}/>
+                                        <AvatarImage src={chat.user?.imageUrl}/>
                                     </Avatar>
                                     <div className={"flex flex-col flex-1"}>
                                         <div className={"flex flex-row justify-between items-start"}>
-                                            <p className={"font-semibold"}>General</p>
-                                            <p className={"font-light text-xs"}>1:23 PM</p>
+                                            <p className={"font-semibold"}>{chat.user?.username}</p>
                                         </div>
-                                        <p className={"text-muted-foreground text-xs"}>Seriously?</p>
                                     </div>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
@@ -119,11 +111,6 @@ export default function ChatSideBar({client, rtClient, ...props}) {
                                     <DropdownMenuItem onClick={() => handleSignOut()}>
                                         <LogOutIcon/>
                                         Logout
-                                    </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                                <DropdownMenuGroup>
-                                    <DropdownMenuItem onClick={() => getRooms()}>
-                                        Get Rooms
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>
