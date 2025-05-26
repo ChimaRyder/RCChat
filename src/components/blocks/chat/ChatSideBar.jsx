@@ -19,16 +19,19 @@ import {ChevronDownIcon, ChevronsUpDownIcon, LogOutIcon, PlusIcon} from "lucide-
 import {useRouter} from "next/navigation";
 import RandomizerButton from "@/components/blocks/chat/RandomizerButton";
 import {useEffect, useState} from "react";
+import {useChatClient} from "@ably/chat/react";
 
 export default function ChatSideBar({client, rtClient, ...props}) {
     const {user} = useUser();
     const {signOut} = useClerk();
     const router = useRouter();
     const [chats, setChats] = useState([])
+    const c = useChatClient();
 
     const handleSignOut = () => {
         console.log("signing out...")
 
+        rtClient.connection.close();
         signOut().then(() => {
             router.push('/')
         })
