@@ -10,18 +10,18 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
-    DropdownMenuItem,
+    DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {Avatar, AvatarImage} from "@/components/ui/avatar";
 import {useClerk, useUser} from "@clerk/nextjs";
-import {ChevronDownIcon, ChevronsUpDownIcon, LogOutIcon, PlusIcon} from "lucide-react";
+import {ChevronDownIcon, ChevronsUpDownIcon, LogOutIcon, PlusIcon, UserIcon} from "lucide-react";
 import {useRouter} from "next/navigation";
 import RandomizerButton from "@/components/blocks/chat/RandomizerButton";
 import {useEffect, useState} from "react";
 import {useChatClient} from "@ably/chat/react";
 
-export default function ChatSideBar({client, rtClient, ...props}) {
+export default function ChatSideBar({client, rtClient, channel, ...props}) {
     const {user} = useUser();
     const {signOut} = useClerk();
     const router = useRouter();
@@ -31,11 +31,11 @@ export default function ChatSideBar({client, rtClient, ...props}) {
     const handleSignOut = () => {
         console.log("signing out...")
 
-        rtClient.connection.close();
         signOut().then(() => {
             router.push('/')
         })
 
+        rtClient.connection.close();
     }
 
     const getRooms = async () => {
@@ -58,6 +58,7 @@ export default function ChatSideBar({client, rtClient, ...props}) {
         setChats(dbChats)
     }
 
+
     useEffect(() => {
         getRooms();
     }, [user]);
@@ -71,12 +72,12 @@ export default function ChatSideBar({client, rtClient, ...props}) {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
-            <SidebarSeparator/>
+            {/*<SidebarSeparator className={"bg-primary"}/>*/}
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Chats</SidebarGroupLabel>
                     <SidebarMenu>
-                        {chats.map(chat => (
+                        {chats.map(chat => ( chat.id !== channel[0] ?
                             <SidebarMenuItem key={chat.id}>
                                 <SidebarMenuButton size={"lg"} className={"cursor-pointer"} onClick={() => router.push(`/chat/${chat.id}`)}>
                                     <Avatar>
@@ -88,7 +89,19 @@ export default function ChatSideBar({client, rtClient, ...props}) {
                                         </div>
                                     </div>
                                 </SidebarMenuButton>
-                            </SidebarMenuItem>
+                                </SidebarMenuItem> :
+                                <SidebarMenuItem key={chat.id}>
+                                    <SidebarMenuButton size={"lg"} className={"cursor-pointer bg-primary text-primary-foreground"} onClick={() => router.push(`/chat/${chat.id}`)}>
+                                        <Avatar>
+                                            <AvatarImage src={chat.user?.imageUrl}/>
+                                        </Avatar>
+                                        <div className={"flex flex-col flex-1"}>
+                                            <div className={"flex flex-row justify-between items-start"}>
+                                                <p className={"font-semibold"}>{chat.user?.username}</p>
+                                            </div>
+                                        </div>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
                         ))}
                     </SidebarMenu>
                 </SidebarGroup>
@@ -98,7 +111,7 @@ export default function ChatSideBar({client, rtClient, ...props}) {
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton size={"lg"} className={""}>
+                                <SidebarMenuButton size={"lg"} className={"cursor-pointer"}>
                                     <Avatar>
                                         <AvatarImage src={user?.imageUrl}/>
                                     </Avatar>
@@ -110,8 +123,25 @@ export default function ChatSideBar({client, rtClient, ...props}) {
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent side={"right"}>
+                                <DropdownMenuLabel className={"flex flex-row justify-between items-center gap-2"}>
+                                    <Avatar>
+                                        <AvatarImage src={user?.imageUrl}/>
+                                    </Avatar>
+                                    <div className={"flex flex-col"}>
+                                        <p className={"font-medium"}>{user?.username}</p>
+                                        <p className={"text-muted-foreground text-xs"}>{user?.primaryEmailAddress.emailAddress}</p>
+                                    </div>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator/>
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem onClick={() => handleSignOut()}>
+                                    <DropdownMenuItem className={"cursor-pointer"}>
+                                        <UserIcon/>
+                                        Account
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                                <DropdownMenuSeparator/>
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem className={"cursor-pointer"} onClick={() => handleSignOut()}>
                                         <LogOutIcon/>
                                         Logout
                                     </DropdownMenuItem>

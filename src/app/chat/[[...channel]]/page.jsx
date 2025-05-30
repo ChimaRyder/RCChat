@@ -44,7 +44,7 @@ const Page = ({params}) => {
             <ChatRoomProvider id={channelName}>
                 <div className={""}>
                     <SidebarProvider>
-                        <ChatSideBar client={chatClient} rtClient = {client}/>
+                        <ChatSideBar client={chatClient} rtClient = {client} channel={use(params).channel}/>
                             <main className={"flex flex-1 justify-center"}>
                                 <div className={"flex flex-col flex-1 max-w-3xl"}>
                                     <Chat channelName={channelName}/>

@@ -34,7 +34,7 @@ export default function Home() {
           </div>
           <div className="bg-muted relative hidden lg:block">
               <img
-                  src="/placeholder.svg"
+                  src="/jarritos-mexican-soda-kFEb8yigiuQ-unsplash.jpg"
                   alt="Image"
                   className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale" />
           </div>

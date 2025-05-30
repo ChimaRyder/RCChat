@@ -25,7 +25,7 @@ export function LoginForm({className, ...props}) {
 
       if (result.status === 'complete') {
         await setActive({session: result.createdSessionId});
-        router.push('/chat/general')
+        router.push('/chat/new')
       }
     } catch (e) {
         console.log(error);

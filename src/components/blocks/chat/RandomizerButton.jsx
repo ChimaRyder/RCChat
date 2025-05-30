@@ -36,7 +36,7 @@ const RandomizerButton = ({client, user, rtClient}) => {
     }
 
     return(
-        <SidebarMenuButton size={"lg"} className={"font-semibold text-lg flex text-center"} onClick={() => getUsers()}>
+        <SidebarMenuButton size={"lg"} className={"font-semibold text-lg flex text-center cursor-pointer"} onClick={() => getUsers()}>
             <PlusIcon className={"size-4"}/>
             New Chat
         </SidebarMenuButton>

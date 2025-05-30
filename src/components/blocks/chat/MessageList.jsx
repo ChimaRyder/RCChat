@@ -10,8 +10,8 @@ const MessageList = ({messages}) => {
                     <AvatarImage src={message.metadata.avatarUrl} />
                 </Avatar>
                 <div className={"flex flex-col ml-2"}>
-                    <div className={user.id !== message.clientId ? "bg-slate-300 py-3 px-4 rounded-xl rounded-bl-none max-w-lg w-fit" : "bg-slate-300 py-3 px-4 rounded-xl rounded-br-none max-w-lg w-fit" } style={{}}>
-                        <p className={"break-all"}>{message.text}</p>
+                    <div className={user.id !== message.clientId ? "bg-secondary py-3 px-4 rounded-xl rounded-bl-none max-w-lg w-fit" : "bg-primary py-3 px-4 rounded-xl rounded-br-none max-w-lg w-fit" } style={{}}>
+                        <p className={`break-all ${user.id !== message.clientId ? "text-secondary-foreground" : "text-primary-foreground"}`}>{message.text}</p>
                     </div>
                     <div className={"text-xs text-muted-foreground mt-1"}>
                         <span className={"text-primary"}>{user.id !== message.clientId ? message.metadata.username : ""}</span> {`${message.createdAt.toLocaleTimeString('en-US', {
