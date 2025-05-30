@@ -46,7 +46,7 @@ export function SignupForm({className, ...props}) {
             if (result.status === 'complete') {
                 toast.success("Email address verified. Welcome to RC Chat!.");
                 await setActive({session : result.createdSessionId });
-                router.push('/chat/general');
+                router.push('/chat/new');
             }
         } catch (error) {
             console.log(error);

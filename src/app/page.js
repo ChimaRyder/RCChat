@@ -9,7 +9,7 @@ export default function Home() {
 
     useEffect( () => {
         const checkAuth = async () => {
-            await clerk.redirectWithAuth('/chat/general');
+            await clerk.redirectWithAuth('/chat/new');
         }
         checkAuth();
     }, [clerk]);
