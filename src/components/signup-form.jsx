@@ -8,14 +8,17 @@ import {toast} from "sonner";
 import {useState} from "react";
 import {cn} from "@/lib/utils";
 import {useRouter} from "next/navigation";
+import {LoaderCircleIcon} from "lucide-react";
 
 export function SignupForm({className, ...props}) {
     const {signUp, setActive} = useSignUp();
     const [pendingVerification, setPendingVerification] = useState(false);
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const {username, email, password} = e.target;
         const formData = {
             username: username.value,
@@ -32,11 +35,14 @@ export function SignupForm({className, ...props}) {
         } catch (error) {
             console.log(error);
             toast.error(error.message);
+        } finally {
+            setLoading(false);
         }
     }
 
     const handleVerify = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const {otp} = e.target;
         const code = otp.value;
 
@@ -51,6 +57,8 @@ export function SignupForm({className, ...props}) {
         } catch (error) {
             console.log(error);
             toast.error(error.message);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -83,9 +91,13 @@ export function SignupForm({className, ...props}) {
                         <Input id="password" type="password" required/>
                     </div>
                     <div id={"clerk-captcha"}></div>
-                    <Button type="submit" className="w-full">
+                    {loading && <Button type="submit" className="w-full">
                         Sign Up
-                    </Button>
+                    </Button>}
+                    {!loading && <Button type="submit" disabled={true} className="w-full">
+                        <LoaderCircleIcon className={"animate-spin"}/>
+                        Sign Up
+                    </Button>}
                 </div>
                 <div className="text-center text-sm">
                     By signing up, you agree to our <a href="#" className="underline underline-offset-4">Terms of
@@ -118,9 +130,13 @@ export function SignupForm({className, ...props}) {
                             </InputOTPGroup>
                         </InputOTP>
                     </div>
-                    <Button type="submit" className="w-full">
+                    {loading && <Button type="submit" className="w-full">
                         Verify
-                    </Button>
+                    </Button>}
+                    {!loading && <Button type="submit" disabled={true} className="w-full">
+                        <LoaderCircleIcon className={"animate-spin"}/>
+                        Verify
+                    </Button>}
                 </div>
                 <div className="text-center text-sm">
                     Already have an account?{" "}

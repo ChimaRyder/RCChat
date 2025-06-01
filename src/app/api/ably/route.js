@@ -44,6 +44,9 @@ const generateCapability = async (claim) => {
 
 export const GET = async () => {
     const user = await currentUser();
+    if (!user) {
+        return Response.json({error: 'Unauthorized'});
+    }
     const userClaim = user.publicMetadata;
     const userCapability = await generateCapability(userClaim);
 

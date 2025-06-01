@@ -7,6 +7,7 @@ import {MessageEvents} from "@ably/chat";
 import {useUser} from "@clerk/nextjs";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
+import SodaIcon from "@/components/SodaIcon";
 
 const Chat = ( {channelName}) => {
     const {roomStatus, roomError} = useRoom();
@@ -14,9 +15,10 @@ const Chat = ( {channelName}) => {
     const [messages, setMessages] = useState([]);
     // placeholder user
     const {user} = useUser();
+    const [loading, setLoading] = useState(true);
 
     // usechannel accepts channel name and a function to invoke when new messages are received. pass dispatch.
-    const {send, getPreviousMessages} = useMessages({
+    const {send, getPreviousMessages } = useMessages({
         listener: (e) => {
             const message = e.message;
             switch (e.type) {
@@ -55,6 +57,7 @@ const Chat = ( {channelName}) => {
             getPreviousMessages({limit: 20})
                 .then((res) => {
                     setMessages(res.items.reverse());
+                    setLoading(false);
                 })
         }
     }, [getPreviousMessages])
@@ -62,21 +65,21 @@ const Chat = ( {channelName}) => {
     return (
         <>
             {channelName !== "chat:new" ?
-            <div className={"overflow-y-auto p-5"}>
-                <MessageList messages={messages}/>
+            <div className={"overflow-y-scroll flex-1 p-5"}>
+                <MessageList messages={messages} loading={loading}/>
             </div> :
             <div className={"flex flex-col gap-2 items-center justify-center flex-1"}>
-                <img src={'/soda-can.png'} className={""} alt={"soda can"} width={150}/>
-                <p className={"text-center text-2xl font-bold"}>
+                <SodaIcon className={"text-primary size-44"}/>
+                <p className={"text-center text-2xl font-bold text-secondary-foreground"}>
                     Welcome to RC Chat!
                 </p>
-                <p className={"text-center text-lg"}>
+                <p className={"text-center text-md text-muted-foreground"}>
                     Press "New Chat" to start a new chat.
                 </p>
             </div>
             }
             <div className={"mt-auto p-5"}>
-                <ChatInput onSubmit={publishMessage} disabled={channelName === "chat:new"}/>
+                <ChatInput onSubmit={publishMessage} disabled={channelName === "chat:new" || loading}/>
             </div>
         </>
     )

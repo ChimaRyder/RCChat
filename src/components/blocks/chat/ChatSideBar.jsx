@@ -19,26 +19,39 @@ import {ChevronDownIcon, ChevronsUpDownIcon, LogOutIcon, PlusIcon, UserIcon} fro
 import {useRouter} from "next/navigation";
 import RandomizerButton from "@/components/blocks/chat/RandomizerButton";
 import {useEffect, useState} from "react";
-import {useChatClient} from "@ably/chat/react";
+import {useChatConnection, useRoom} from "@ably/chat/react";
+import {Skeleton} from "@/components/ui/skeleton";
 
-export default function ChatSideBar({client, rtClient, channel, ...props}) {
+export default function ChatSideBar({client, rtClient, channel, setPageLoading, ...props}) {
     const {user} = useUser();
     const {signOut} = useClerk();
     const router = useRouter();
     const [chats, setChats] = useState([])
-    const c = useChatClient();
+    const [loading, setLoading] = useState(true);
 
     const handleSignOut = () => {
+        setPageLoading(true);
         console.log("signing out...")
 
-        signOut().then(() => {
-            router.push('/')
-        })
-
-        rtClient.connection.close();
+        try {
+            // leave chat:online-users and chat:id
+            console.log(client)
+            rtClient.channels.get(`chat:${user?.id}`).unsubscribe();
+            rtClient.connection.close();
+        } catch (e) {
+            console.log(e)
+        } finally {
+            signOut().then(() => {
+                router.push('/')
+            })
+            setPageLoading(false);
+        }
     }
 
     const getRooms = async () => {
+        if (!user) {
+            return;
+        }
         const res = await fetch('/api/db', {})
         const rooms = await res.json()
 
@@ -61,6 +74,9 @@ export default function ChatSideBar({client, rtClient, channel, ...props}) {
 
     useEffect(() => {
         getRooms();
+        setTimeout(() => {
+            setLoading(false);
+        }, 1000)
     }, [user]);
 
     return (
@@ -72,14 +88,15 @@ export default function ChatSideBar({client, rtClient, channel, ...props}) {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
-            {/*<SidebarSeparator className={"bg-primary"}/>*/}
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Chats</SidebarGroupLabel>
                     <SidebarMenu>
-                        {chats.map(chat => ( chat.id !== channel[0] ?
+                        {!loading && chats.map(chat => ( chat.id !== channel[0] ?
                             <SidebarMenuItem key={chat.id}>
-                                <SidebarMenuButton size={"lg"} className={"cursor-pointer"} onClick={() => router.push(`/chat/${chat.id}`)}>
+                                <SidebarMenuButton size={"lg"} className={"cursor-pointer"} onClick={() => {
+                                    router.push(`/chat/${chat.id}`);
+                                }}>
                                     <Avatar>
                                         <AvatarImage src={chat.user?.imageUrl}/>
                                     </Avatar>
@@ -103,6 +120,33 @@ export default function ChatSideBar({client, rtClient, channel, ...props}) {
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                         ))}
+
+                        {loading &&
+                            <>
+                                <SidebarMenuSkeleton/>
+                                <SidebarMenuSkeleton/>
+                                <SidebarMenuSkeleton/>
+                                <SidebarMenuSkeleton/>
+                                <SidebarMenuSkeleton/>
+                                <SidebarMenuSkeleton/>
+                                <SidebarMenuSkeleton/>
+                                <SidebarMenuSkeleton/>
+                                <SidebarMenuSkeleton/>
+                            </>
+                        }
+                        { loading &&
+                            Array.from({length: 7}).map((e, i) => (
+                                    <SidebarMenuItem key={i}>
+                                        <SidebarMenuButton disabled={true} size={"lg"}>
+                                            <Skeleton className={"rounded-full h-8 w-8"}/>
+                                            <div className={"flex flex-col flex-1"}>
+                                                <SidebarMenuSkeleton/>
+                                            </div>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))
+                        }
+
                     </SidebarMenu>
                 </SidebarGroup>
             </SidebarContent>

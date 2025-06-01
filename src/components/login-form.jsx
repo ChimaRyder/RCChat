@@ -7,13 +7,17 @@ import {useSignIn} from "@clerk/nextjs";
 import {useRouter} from "next/navigation";
 import {error} from "next/dist/build/output/log";
 import {toast} from "sonner";
+import {useState} from "react";
+import {LoaderCircleIcon} from "lucide-react";
 
-export function LoginForm({className, ...props}) {
+export function LoginForm({className, authLoading, ...props}) {
   const {signIn, setActive} = useSignIn();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const {email, password} = e.target;
     const formData = {
       identifier: email.value,
@@ -30,6 +34,8 @@ export function LoginForm({className, ...props}) {
     } catch (e) {
         console.log(error);
         toast.error(e.message);
+    } finally {
+        setLoading(false);
     }
   }
 
@@ -44,7 +50,7 @@ export function LoginForm({className, ...props}) {
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="john.doe@cit.edu" required />
+          <Input id="email" type="email" placeholder="Email" required />
         </div>
         <div className="grid gap-3">
           <div className="flex items-center">
@@ -53,11 +59,16 @@ export function LoginForm({className, ...props}) {
               Forgot your password?
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <Input id="password" type="password" placeholder={"Password"} required />
         </div>
-        <Button type="submit" className="w-full">
+        {!loading && !authLoading && <Button type="submit" className="w-full">
           Login
-        </Button>
+        </Button>}
+
+        {(loading || authLoading) && <Button type="submit" disabled={true} className="w-full">
+          <LoaderCircleIcon className={"animate-spin"}/>
+          Login
+        </Button>}
       </div>
       <div className="text-center text-sm">
         Don&apos;t have an account?{" "}

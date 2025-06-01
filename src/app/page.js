@@ -2,16 +2,20 @@
 import {CupSoda, GalleryVerticalEnd} from "lucide-react";
 import {LoginForm} from "@/components/login-form";
 import {useClerk} from "@clerk/nextjs";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import SodaIcon from "@/components/SodaIcon";
 
 export default function Home() {
     const clerk = useClerk();
+    const [loading, setLoading] = useState(true);
 
     useEffect( () => {
         const checkAuth = async () => {
             await clerk.redirectWithAuth('/chat/new');
         }
+
         checkAuth();
+        setLoading(false);
     }, [clerk]);
   return (
 
@@ -21,14 +25,14 @@ export default function Home() {
                   <a href="#" className="flex items-center gap-2 font-medium">
                       <div
                           className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
-                          <CupSoda className="size-4" />
+                          <SodaIcon className="size-4" />
                       </div>
                       RC Chat
                   </a>
               </div>
               <div className="flex flex-1 items-center justify-center">
                   <div className="w-full max-w-xs">
-                      <LoginForm />
+                      <LoginForm authLoading={loading} />
                   </div>
               </div>
           </div>
