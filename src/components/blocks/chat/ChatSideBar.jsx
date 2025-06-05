@@ -21,6 +21,8 @@ import RandomizerButton from "@/components/blocks/chat/RandomizerButton";
 import {useEffect, useState} from "react";
 import {useChatConnection, useRoom} from "@ably/chat/react";
 import {Skeleton} from "@/components/ui/skeleton";
+import {AccountSettings, AccountSettingsButton} from "@/components/blocks/chat/AccountSettings";
+import {Dialog} from "@/components/ui/dialog";
 
 export default function ChatSideBar({client, rtClient, channel, setPageLoading, ...props}) {
     const {user} = useUser();
@@ -153,45 +155,49 @@ export default function ChatSideBar({client, rtClient, channel, setPageLoading, 
             <SidebarFooter>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton size={"lg"} className={"cursor-pointer"}>
-                                    <Avatar>
-                                        <AvatarImage src={user?.imageUrl}/>
-                                    </Avatar>
-                                    <div className={"flex flex-col"}>
-                                        <p className={"font-medium"}>{user?.username}</p>
-                                        <p className={"text-muted-foreground text-xs"}>{user?.primaryEmailAddress.emailAddress}</p>
-                                    </div>
-                                    <ChevronsUpDownIcon className={"size-4 ml-auto"}/>
-                                </SidebarMenuButton>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent side={"right"}>
-                                <DropdownMenuLabel className={"flex flex-row justify-between items-center gap-2"}>
-                                    <Avatar>
-                                        <AvatarImage src={user?.imageUrl}/>
-                                    </Avatar>
-                                    <div className={"flex flex-col"}>
-                                        <p className={"font-medium"}>{user?.username}</p>
-                                        <p className={"text-muted-foreground text-xs"}>{user?.primaryEmailAddress.emailAddress}</p>
-                                    </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator/>
-                                <DropdownMenuGroup>
-                                    <DropdownMenuItem className={"cursor-pointer"}>
-                                        <UserIcon/>
-                                        Account
-                                    </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                                <DropdownMenuSeparator/>
-                                <DropdownMenuGroup>
-                                    <DropdownMenuItem className={"cursor-pointer"} onClick={() => handleSignOut()}>
-                                        <LogOutIcon/>
-                                        Logout
-                                    </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Dialog>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <SidebarMenuButton size={"lg"} className={"cursor-pointer"}>
+                                        <Avatar>
+                                            <AvatarImage src={user?.imageUrl}/>
+                                        </Avatar>
+                                        <div className={"flex flex-col"}>
+                                            <p className={"font-medium"}>{user?.username}</p>
+                                            <p className={"text-muted-foreground text-xs"}>{user?.primaryEmailAddress.emailAddress}</p>
+                                        </div>
+                                        <ChevronsUpDownIcon className={"size-4 ml-auto"}/>
+                                    </SidebarMenuButton>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent side={"right"}>
+                                    <DropdownMenuLabel className={"flex flex-row justify-between items-center gap-2"}>
+                                        <Avatar>
+                                            <AvatarImage src={user?.imageUrl}/>
+                                        </Avatar>
+                                        <div className={"flex flex-col"}>
+                                            <p className={"font-medium"}>{user?.username}</p>
+                                            <p className={"text-muted-foreground text-xs"}>{user?.primaryEmailAddress.emailAddress}</p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator/>
+                                    <DropdownMenuGroup>
+                                        {/*<DropdownMenuItem className={"cursor-pointer"}>*/}
+                                        {/*    <UserIcon/>*/}
+                                        {/*    Account*/}
+                                        {/*</DropdownMenuItem>*/}
+                                        <AccountSettingsButton/>
+                                    </DropdownMenuGroup>
+                                    <DropdownMenuSeparator/>
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem className={"cursor-pointer"} onClick={() => handleSignOut()}>
+                                            <LogOutIcon/>
+                                            Logout
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <AccountSettings/>
+                        </Dialog>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
