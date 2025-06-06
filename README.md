@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# RC Chat: An Omegle-inspired Chat Platform
 
-## Getting Started
+RC Chat is a chat platform with a twist. Instead of finding new friends to chat on your own, we finds them for you! Chat with your new pals in a new, unexpected fashion.
 
-First, run the development server:
+This project is web-based port of the original RC Chat. Both projects are inspired from Omegle Chat, where users get to chat with random strangers.
+
+Deciding to modernize the idea, RC Chat blends the randomized chats with the modern UIs of Discord and Messenger.
+## Authors
+
+- [@ChimaRyder](https://www.github.com/ChimaRyder)
+
+
+## Tech Stack
+
+**Client:** ![Next.js](https://img.shields.io/badge/Next.js-black?logo=next.js&logoColor=white&style=for-the-badge) ![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-%2338B2AC.svg?logo=tailwind-css&logoColor=white&style=for-the-badge) ![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=fff&style=for-the-badge)
+
+**Server:** ![Clerk](https://img.shields.io/badge/Clerk-6c47ff?logo=clerk&logoColor=fff&style=for-the-badge) ![Ably](https://img.shields.io/badge/Ably-ED760A?style=for-the-badge&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+
+## Features
+
+- Create an account
+- Find a New Chat via "New Chat"
+- Realtime chats and new chat notifications
+- View recent chat histories
+- Customizable profiles
+- Light/Dark mode
+
+
+## Run Locally
+
+Clone the project
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+  git clone https://github.com/ChimaRyder/RCChat
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Go to the project directory
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+  cd RCChat
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Install dependencies
 
-## Learn More
+```bash
+  npm install
+```
 
-To learn more about Next.js, take a look at the following resources:
+Start the server
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+  npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Environment Variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To run this project, you will need to add the following environment variables to your .env file
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+
+`CLERK_SECRET_KEY`
+
+`ABLY_SECRET_KEY`
+
+`MONGODB_URI`
+
