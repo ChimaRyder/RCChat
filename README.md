@@ -1,5 +1,7 @@
 # RC Chat: An Omegle-inspired Chat Platform
 
+![Cover Image](/RC_Chat_Cover.png)
+
 RC Chat is a chat platform with a twist. Instead of finding new friends to chat on your own, we finds them for you! Chat with your new pals in a new, unexpected fashion.
 
 This project is web-based port of the original RC Chat. Both projects are inspired from Omegle Chat, where users get to chat with random strangers.
