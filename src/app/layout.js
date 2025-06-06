@@ -3,6 +3,7 @@ import "./globals.css";
 import {ClerkProvider} from "@clerk/nextjs";
 import {Toast} from "next/dist/client/components/react-dev-overlay/ui/components/toast";
 import {Toaster} from "@/components/ui/sonner";
+import {ThemeProvider} from "next-themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,15 +23,22 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
       <ClerkProvider>
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
         <head>
             <link rel="icon" href="/soda-bottle.svg" />
         </head>
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
-            {children}
-          <Toaster/>
+          <ThemeProvider
+              attribute={"class"}
+              defaultTheme={"system"}
+              enableSystem
+              disableTransitionOnChange
+          >
+              {children}
+              <Toaster/>
+          </ThemeProvider>
           </body>
         </html>
       </ClerkProvider>

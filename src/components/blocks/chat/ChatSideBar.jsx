@@ -28,6 +28,7 @@ export default function ChatSideBar({client, rtClient, channel, setPageLoading, 
     const {user} = useUser();
     const {signOut} = useClerk();
     const router = useRouter();
+    const [open, setOpen] = useState(false);
     const [chats, setChats] = useState([])
     const [loading, setLoading] = useState(true);
 
@@ -155,7 +156,7 @@ export default function ChatSideBar({client, rtClient, channel, setPageLoading, 
             <SidebarFooter>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <Dialog>
+                        <Dialog open={open} onOpenChange={setOpen}>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <SidebarMenuButton size={"lg"} className={"cursor-pointer"}>
@@ -196,7 +197,7 @@ export default function ChatSideBar({client, rtClient, channel, setPageLoading, 
                                     </DropdownMenuGroup>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <AccountSettings/>
+                            <AccountSettings setOpen={setOpen}/>
                         </Dialog>
                     </SidebarMenuItem>
                 </SidebarMenu>
